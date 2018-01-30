@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find rovi_igusd_arm_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <test pkg="kinematics_python_wrapper" test-name="kinematics_python_wrapper_test_kdl" type="kinematics_python_wrapper_test.py" time-limit="10.0">
+    <param name="kinematics_plugin" value="kdl_kinematics_plugin/KDLKinematicsPlugin"/>
+    <param name="position_only_ik" value="true"/>
+    <param name="solve_type" value="speed"/>
+    <param name="start_link_urdf" value="base_link"/>
+    <param name="end_link_urdf" value="link6"/>
+  </test>
+</launch>

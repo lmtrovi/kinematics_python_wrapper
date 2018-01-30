@@ -34,6 +34,9 @@
   <run_depend>moveit_core</run_depend>
   <run_depend>pluginlib</run_depend>
 
+  <test_depend>rovi_igusd_arm_model</test_depend>
+  <test_depend>rovi_igusd_arm_moveit_config</test_depend>
+
   <buildtool_depend>catkin</buildtool_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
