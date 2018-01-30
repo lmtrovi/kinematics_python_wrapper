@@ -36,6 +36,7 @@
 
   <test_depend>rovi_igusd_arm_model</test_depend>
   <test_depend>rovi_igusd_arm_moveit_config</test_depend>
+  <test_depend>trac_ik_kinematics_plugin</test_depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 
