@@ -48,7 +48,7 @@ class TestArmKinematics(unittest.TestCase):
         self.start_link_urdf = rospy.get_param('~start_link_urdf')
         self.end_link_urdf = rospy.get_param('~end_link_urdf')
         self.kinematics = ArmKinematics(self.kinematics_plugin, self.position_only_ik, self.solve_type, self.start_link_urdf, self.end_link_urdf)
-
+        self.assertTrue(self.kinematics.getInitResult())
     
     def test_arm_kinematics_init(self):
         self.assertTrue(self.kinematics.getInitResult())
@@ -72,21 +72,38 @@ class TestArmKinematics(unittest.TestCase):
         pose = self.kinematics.getPositionFK(self.end_link_urdf, [-99.0, 0.0, 0.0, 0.0, 0.0] )
         self.assertIsNotNone(pose)
         ik_solution = self.kinematics.searchPositionIK(pose['position'], pose['orientation'], [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)
+        ik_solution_approx = self.kinematics.searchApproximatePositionIK(pose['position'], pose['orientation'], [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)        
         self.assertIsNotNone(ik_solution)
+        self.assertIsNotNone(ik_solution_approx)
         self.assertNotEqual(ik_solution[0], -99.0)
+        self.assertNotEqual(ik_solution_approx[0], -99.0)
         
     # Some inverse kinematic tests
     def test_ik_for_zero_pos(self):
         pose = self.kinematics.getPositionFK(self.end_link_urdf, [0.0, 0.0, 0.0, 0.0, 0.0] )
         self.assertIsNotNone(pose)
         ik_solution = self.kinematics.searchPositionIK(pose['position'], pose['orientation'], [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)
+        #ik_solution_approx = self.kinematics.searchApproximatePositionIK(pose['position'], pose['orientation'], [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)        
         self.assertIsNotNone(ik_solution)
+        #self.assertIsNotNone(ik_solution_approx)
     
     def test_ik_unreachable(self):
         position = [10.0, 10.0, 10.0]
         orientation = [0.0, 0.0, 0.0, 1.0]
         ik_solution = self.kinematics.searchPositionIK(position, orientation, [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)
+        #ik_solution_approx = self.kinematics.searchApproximatePositionIK(position, orientation, [0.0, 0.0, 0.0, 0.0, 0.0], 0.1)
         self.assertIsNone(ik_solution)
+        #self.assertIsNone(ik_solution_approx)
+    
+    def test_ik_approximate_solution(self):
+        position = [0.3, -0.1, 0.3]
+        orientation = [0.925, -0.371, 0.082, 0.000]
+        #seed_state = [-0.38, -0.47, 0.11, -1.04, -2.76]
+        seed_state = [0.0, 0.0, 0.0, 0.0, 0.0]
+        ik_solution = self.kinematics.searchPositionIK(position, orientation, seed_state, 0.5)
+        ik_solution_approx = self.kinematics.searchApproximatePositionIK(position, orientation, seed_state, 0.5)
+        self.assertIsNone(ik_solution)
+        self.assertIsNotNone(ik_solution_approx)
 
 if __name__ == '__main__':
     

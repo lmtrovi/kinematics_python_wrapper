@@ -5,10 +5,10 @@
 
   <test pkg="kinematics_python_wrapper" test-name="kinematics_python_wrapper_test_trac_ik" type="kinematics_python_wrapper_test.py" time-limit="10.0">
     <param name="kinematics_plugin" value="trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin"/>
-    <param name="position_only_ik" value="true"/>
+    <param name="position_only_ik" value="false"/>
     <param name="solve_type" value="speed"/>
     <param name="start_link_urdf" value="base_link"/>
     <param name="end_link_urdf" value="link6"/>
   </test>
-  
+
 </launch>

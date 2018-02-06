@@ -53,7 +53,7 @@ class kinematics_wrapper
             } catch(pluginlib::PluginlibException& ex) {
                 ROS_ERROR("The plugin failed to load. Error: %s", ex.what());
             }
-            printf("ik:%x\n", (void*)ik.get());
+            //printf("ik:%x\n", (void*)ik.get());
 			//ik = new ikfast_kinematics_plugin::IKFastKinematicsPlugin();
 		}
 		~kinematics_wrapper()  {  }
@@ -93,7 +93,17 @@ class kinematics_wrapper
 				return py::object();
 		}
 
-		py::object searchPositionIK(py::list ik_position, py::list ik_orientation, py::list ik_seed_state, double timeout)
+		py::object searchPositionIK(py::list ik_position, py::list ik_orientation, py::list ik_seed_state, double timeout) {
+			return getPositionIK(ik_position, ik_orientation, ik_seed_state,timeout, false);
+		}
+
+
+	    py::object searchApproximatePositionIK(py::list ik_position, py::list ik_orientation, py::list ik_seed_state, double timeout)
+		{
+			return getPositionIK(ik_position, ik_orientation, ik_seed_state,timeout, true);
+		}
+
+		py::object getPositionIK(py::list ik_position, py::list ik_orientation, py::list ik_seed_state, double timeout, bool approximate_solution = false)
 		{
 			geometry_msgs::Pose _ik_pose;
 			_ik_pose.position.x = py::extract<double>(ik_position[0]);
@@ -106,7 +116,9 @@ class kinematics_wrapper
 			std::vector< double > _ik_seed_state = to_std_vector<double>(ik_seed_state);
 			std::vector< double > _consistency_limits, _solution;
 			moveit_msgs::MoveItErrorCodes _error_code;
-			bool r = ik->searchPositionIK (_ik_pose, _ik_seed_state, timeout, _consistency_limits, _solution, _error_code);
+			kinematics::KinematicsQueryOptions _options;
+			_options.return_approximate_solution = approximate_solution;
+			bool r = ik->searchPositionIK (_ik_pose, _ik_seed_state, timeout, _consistency_limits, _solution, _error_code, _options);
 			if (r)
 				return to_py_list<double>(_solution);
 			else
@@ -142,5 +154,6 @@ BOOST_PYTHON_MODULE(kinematics_py)
         .def("getBaseFrame", &KinematicsType::getBaseFrame)
         .def("getPositionFK", &KinematicsType::getPositionFK)
         .def("searchPositionIK", &KinematicsType::searchPositionIK)
+		.def("searchApproximatePositionIK", &KinematicsType::searchApproximatePositionIK)
     ;
 }
